@@ -3,6 +3,32 @@ from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 
 
+def parseInt(text: str):
+    if text.startswith('0x'):
+        return int(text, 16)
+    elif text == '':
+        return 0
+    elif '.' in text:
+        return float(text)
+    else:
+        return int(text)
+
+
+def create_set_function(self, obj, *args, **kwargs):
+    def function_template(*args, **kwargs):
+        for item in obj.horizontalLayouts:
+            if isinstance(item, MsgNameQHBoxLayout):
+                mgs_name = item.Label.text()
+            if isinstance(item, SetQHBoxLayout):
+                name = item.Label.text()
+                value = parseInt(item.lineEdit.text())
+                print(name, value)
+                print(self.app.DESCRIPTOR.fields_by_name)
+                self.app.DESCRIPTOR[mgs_name][name] = value
+        print(self.app)
+    return function_template
+
+
 class SetQHBoxLayout(QHBoxLayout):
     def __init__(self, scrollAreaWidgetContents, name, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -12,13 +38,20 @@ class SetQHBoxLayout(QHBoxLayout):
         self.Label.setFixedSize(QSize(100, 20))
         self.Label.setText(self.name)
         self.addWidget(self.Label)
-        self.pushButtonS = QPushButton(scrollAreaWidgetContents)
-        self.pushButtonS.setFixedSize(QSize(40, 20))
-        self.pushButtonS.setText("Set")
-        self.addWidget(self.pushButtonS)
         self.lineEdit = QLineEdit(scrollAreaWidgetContents)
         self.lineEdit.setFixedSize(QSize(80, 20))
         self.addWidget(self.lineEdit)
+
+
+class MsgNameQHBoxLayout(QHBoxLayout):
+    def __init__(self, scrollAreaWidgetContents, name, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = name
+
+        self.Label = QLabel(scrollAreaWidgetContents)
+        self.Label.setFixedSize(QSize(100, 20))
+        self.Label.setText(self.name)
+        self.addWidget(self.Label)
 
 
 class ProtoSetScrollArea(QScrollArea):
@@ -35,9 +68,10 @@ class ProtoSetScrollArea(QScrollArea):
         self.label_.setText(self.name)
         self.verticalLayout_m.addWidget(self.label_)
 
-        self.repeat_get = QCheckBox(centralWidget)
-        self.repeat_get.setText('get repeat 2s')
-        self.verticalLayout_m.addWidget(self.repeat_get)
+        self.pushButtonS = QPushButton(centralWidget)
+        self.pushButtonS.setFixedSize(QSize(40, 20))
+        self.pushButtonS.setText("Set")
+        self.verticalLayout_m.addWidget(self.pushButtonS)
 
         self.setGeometry(QRect(10, 10, 400, 300))
         self.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
@@ -52,18 +86,19 @@ class ProtoSetScrollArea(QScrollArea):
 
         self.horizontalLayouts = []
         for key, val in self.proto_dict.items():
-            tmp = SetQHBoxLayout(self.scrollAreaWidgetContents, key)
-            self.horizontalLayouts.append(tmp)
+            if isinstance(val, int):
+                tmp = SetQHBoxLayout(self.scrollAreaWidgetContents, key)
+                self.horizontalLayouts.append(tmp)
+            elif isinstance(val, dict):
+                label_ = MsgNameQHBoxLayout(self.scrollAreaWidgetContents, key)
+                self.horizontalLayouts.append(label_)
+                for x, y in val.items():
+                    tmp = SetQHBoxLayout(self.scrollAreaWidgetContents, x)
+                    self.horizontalLayouts.append(tmp)
+
         for x in self.horizontalLayouts:
             self.verticalLayout.addLayout(x)
 
         self.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_m.addWidget(self)
 
-    def checkbox_update(self):
-        self.timer = QtCore.QTimer()
-        self.timer.timeout.connect(self.update_label2)
-        if self.repeat_get.isChecked():
-            self.timer.start(2000)
-        else:
-            self.timer.stop()

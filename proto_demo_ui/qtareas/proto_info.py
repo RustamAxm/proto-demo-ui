@@ -36,8 +36,6 @@ class ProtoInfoScrollArea(QScrollArea):
         self.label2.setText("datas")
         self.verticalLayout.addWidget(self.label2)
 
-
-
         self.setWidget(self.scrollAreaWidgetContents)
         self.verticalLayout_m.addWidget(self)
 
