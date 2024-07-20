@@ -1,0 +1,18 @@
+[tool.poetry]
+name = "proto-demo-ui"
+version = "0.1.0"
+description = ""
+authors = ["Rustam Akhmadullin"]
+readme = "README.md"
+packages = [{include = "proto_demo_ui"}]
+
+[tool.poetry.dependencies]
+python = ">=3.10, <3.11"
+loguru = "^0.7.2"
+PySide2 = "^5.15.2.1"
+protobuf = "^5.27.2"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

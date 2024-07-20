@@ -1,0 +1,30 @@
+syntax = "proto3";
+
+message Info
+{
+    uint32 info1 = 1;
+    uint32 info2 = 2;
+    uint32 info3 = 3;
+}
+
+message Status
+{
+    uint32 status1 = 1;
+    uint32 status2 = 2;
+}
+
+message Header
+{
+    uint32 head1 = 1;
+    uint32 head2 = 2;
+    float head3 = 3;
+    uint64 head4 = 4;
+}
+
+message Application
+{
+    Info info = 1;
+    Status status = 2;
+    optional Header head = 4;
+    repeated uint32 payload = 5;
+}
