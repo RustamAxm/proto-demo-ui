@@ -3,6 +3,7 @@ from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 from google.protobuf.json_format import ParseDict
 
+
 def parseInt(text: str):
     if text.startswith('0x'):
         return int(text, 16)
@@ -24,12 +25,10 @@ def create_set_function(self, obj, *args, **kwargs):
             elif isinstance(item, SetQHBoxLayout):
                 name = item.Label.text()
                 value = parseInt(item.lineEdit.text())
-                if name == 'payload':
+                if name in self.proto_dict.keys():
                     tmp[name] = [value]
                 else:
                     tmp[mgs_name][name] = value
-            else:
-
         ParseDict(tmp, self.app)
 
     return function_template
