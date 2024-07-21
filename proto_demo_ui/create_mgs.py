@@ -5,8 +5,8 @@ from generation.py_gen import proto_app_pb2
 
 
 class MsgManager:
-    def __init__(self):
-        self.dev = serial.Serial('/tmp/ttyV0', baudrate=115200)
+    def __init__(self, port, baudrate):
+        self.dev = serial.Serial(port, baudrate=baudrate, timeout=1)
 
     def send(self, msg):
         data = msg.SerializeToString()

@@ -17,7 +17,7 @@ class MainWindow(QMainWindow):
         self.proto_dict = proto_dict
         self.app_out = proto_app_pb2.Application()
         self.app_in = proto_app_pb2.Application()
-        self.msg_manager = MsgManager()
+        self.msg_manager = MsgManager('/tmp/ttyV0', 115200)
         self.setupUi()
         self._init_buttons()
 
