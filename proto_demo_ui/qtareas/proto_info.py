@@ -2,13 +2,23 @@
 from PySide2 import QtCore
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
+from google.protobuf.json_format import MessageToDict
+
+
+def create_info_function(self, obj, *args, **kwargs):
+    def function_template(*args, **kwargs):
+        data = f'{self.app_in}'
+        obj.label2.setText(data)
+        print(f'{data=}')
+
+    return function_template
 
 
 class ProtoInfoScrollArea(QScrollArea):
-    def __init__(self, centralWidget, name, deser, *args, **kwargs):
+    def __init__(self, centralWidget, name, msg_manager, *args, **kwargs):
         super().__init__(centralWidget, *args, **kwargs)
         self.name = name
-        self.deser = deser
+        self.msg_manager = msg_manager
 
         self.verticalLayout_m = QVBoxLayout()
         self.verticalLayout_m.setObjectName(u"verticalLayout")
@@ -48,6 +58,5 @@ class ProtoInfoScrollArea(QScrollArea):
             self.timer.stop()
 
     def update_label2(self):
-        tmp_str = f"status:\n{self.deser.get_debug_status()}\n"
-        tmp_str += f"info:\n{self.deser.get_debug_info()}\n"
+        tmp_str = f'{self.msg_manager.read()}'
         self.label2.setText(f'{tmp_str}')

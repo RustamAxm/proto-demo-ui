@@ -1,7 +1,7 @@
 from PySide2 import QtCore
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
-from google.protobuf.json_format import ParseDict
+from google.protobuf.json_format import ParseDict, MessageToDict
 
 
 def parseInt(text: str):
@@ -29,8 +29,8 @@ def create_set_function(self, obj, *args, **kwargs):
                     tmp[name] = [value]
                 else:
                     tmp[mgs_name][name] = value
-        ParseDict(tmp, self.app)
-
+        ParseDict(tmp, self.app_out)
+        self.msg_manager.send(self.app_out)
     return function_template
 
 
@@ -45,6 +45,7 @@ class SetQHBoxLayout(QHBoxLayout):
         self.addWidget(self.Label)
         self.lineEdit = QLineEdit(scrollAreaWidgetContents)
         self.lineEdit.setFixedSize(QSize(80, 20))
+        self.lineEdit.setText(f'{0}')
         self.addWidget(self.lineEdit)
 
 
