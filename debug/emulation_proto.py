@@ -14,7 +14,12 @@ def main():
         app = proto_app_pb2.Application()
         app.ParseFromString(tmp)
         logger.info(f'vals {app=}')
+        app.head.head1 = 10
+        app.head.head2 = 20
+        app.payload.extend([2345])
+        logger.info(f'vals out {app=}')
         dev_rs.write(app.SerializeToString())
+        time.sleep(2)
 
 
 if __name__ == '__main__':
