@@ -5,14 +5,19 @@ from PySide2 import QtCore
 from PySide2.QtWidgets import *
 from PySide2.QtCore import *
 
-from proto_demo_ui.qtareas.proto_info import ProtoInfoScrollArea
-from proto_demo_ui.qtareas.proto_set import ProtoSetScrollArea
+from proto_demo_ui.create_mgs import MsgManager
+from proto_demo_ui.qtareas.proto_info import ProtoInfoScrollArea, create_info_function
+from proto_demo_ui.qtareas.proto_set import ProtoSetScrollArea, create_set_function
+from generation.py_gen import proto_app_pb2
 
 
 class MainWindow(QMainWindow):
     def __init__(self, proto_dict, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.proto_dict = proto_dict
+        self.app_out = proto_app_pb2.Application()
+        self.app_in = proto_app_pb2.Application()
+        self.msg_manager = MsgManager('/tmp/ttyV0', 115200)
         self.setupUi()
         self._init_buttons()
 
@@ -21,6 +26,12 @@ class MainWindow(QMainWindow):
 
     def _init_buttons(self):
         logger.info(f'_init_buttons')
+        for area in self.area_list:
+            if isinstance(area, ProtoSetScrollArea):
+                fnc = create_set_function(self, area)
+                area.pushButtonS.clicked.connect(fnc)
+            elif isinstance(area, ProtoInfoScrollArea):
+                area.repeat_get.clicked.connect(area.checkbox_update)
 
     def setupUi(self):
         if not self.objectName():
@@ -36,29 +47,19 @@ class MainWindow(QMainWindow):
         self.horizontalLayout_main.setContentsMargins(10, 10, 10, 10)
 
         self.area_list = []
-        for key, val in self.proto_dict.items():
-            if isinstance(val, dict):
-                self.area_list.append(
-                    ProtoSetScrollArea(
-                        self.centralWidget,
-                        f"set_{key}",
-                        val,
-                    )
-                )
-            else:
-                self.area_list.append(
-                    ProtoSetScrollArea(
-                        self.centralWidget,
-                        f"set_{key}",
-                        {key: val},
-                    )
-                )
+        self.area_list.append(
+            ProtoSetScrollArea(
+                self.centralWidget,
+                f"set_",
+                self.proto_dict,
+            )
+        )
 
         self.area_list.append(
             ProtoInfoScrollArea(
             self.centralWidget,
             "proto_support",
-                None,
+                self.msg_manager,
             )
         )
 
