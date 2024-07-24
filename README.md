@@ -18,6 +18,7 @@ Proto file [proto_app.proto](proto/proto_app.proto)
 poetry run demo-ui
 ```
 ![](images/img.png)
+
 emulation
 ```bash
 ./debug/run_virt_com.sh 
